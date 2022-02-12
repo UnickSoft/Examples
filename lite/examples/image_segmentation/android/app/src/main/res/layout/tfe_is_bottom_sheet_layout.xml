@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
@@ -22,31 +22,47 @@
         android:layout_gravity="center"
         android:src="@drawable/icn_chevron_up" />
 
-    <Switch
-        android:id="@+id/switch_use_gpu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/tfe_is_gpu" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Switch
+            android:id="@+id/switch_use_gpu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/tfe_is_gpu"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <Switch
+            android:id="@+id/switch_use_gpu_pass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/tfe_is_gpu_pass"
+            tools:ignore="TouchTargetSizeCheck" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/log_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:padding="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:padding="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@android:color/black" />
 
     <TextView
         android:id="@+id/tfe_is_labels_found"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:padding="8dp"
         android:text="@string/tfe_is_labels_found" />
 
     <com.google.android.material.chip.ChipGroup

@@ -49,6 +49,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import org.tensorflow.lite.examples.imagesegmentation.camera.CameraFragment
 import org.tensorflow.lite.examples.imagesegmentation.tflite.ImageSegmentationModelExecutor
+import org.tensorflow.lite.examples.imagesegmentation.tflite.ImageSegmentationModelExecutorGPUPass
 import org.tensorflow.lite.examples.imagesegmentation.tflite.ModelExecutionResult
 
 // This is an arbitrary number we are using to keep tab of the permission
@@ -75,6 +76,7 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
 
   private var lastSavedFile = ""
   private var useGPU = false
+  private var useGPUPass = false
   private var imageSegmentationModel: ImageSegmentationModelExecutor? = null
   private val inferenceThread = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
   private val mainScope = MainScope()
@@ -96,6 +98,7 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
     chipsGroup = findViewById(R.id.chips_group)
     captureButton = findViewById(R.id.capture_button)
     val useGpuSwitch: Switch = findViewById(R.id.switch_use_gpu)
+    val useGpuPassSwitch: Switch = findViewById(R.id.switch_use_gpu_pass)
 
     // Request camera permissions
     if (allPermissionsGranted()) {
@@ -115,11 +118,22 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
       }
     )
 
-    createModelExecutor(useGPU)
+    createModelExecutor(useGPU, useGPUPass)
 
     useGpuSwitch.setOnCheckedChangeListener { _, isChecked ->
       useGPU = isChecked
-      mainScope.async(inferenceThread) { createModelExecutor(useGPU) }
+
+      useGpuPassSwitch.isEnabled = isChecked
+      useGpuPassSwitch.isChecked = false
+      useGPUPass = false
+
+      mainScope.async(inferenceThread) { createModelExecutor(useGPU, useGPUPass) }
+    }
+
+    useGpuPassSwitch.isEnabled = useGPU
+    useGpuPassSwitch.setOnCheckedChangeListener { _, isChecked ->
+      useGPUPass = isChecked
+      mainScope.async(inferenceThread) { createModelExecutor(useGPU, useGPUPass) }
     }
 
     rerunButton = findViewById(R.id.rerun_button)
@@ -137,13 +151,13 @@ class MainActivity : AppCompatActivity(), CameraFragment.OnCaptureFinished {
     enableControls(true)
   }
 
-  private fun createModelExecutor(useGPU: Boolean) {
+  private fun createModelExecutor(useGPU: Boolean, useGPUPass: Boolean) {
     if (imageSegmentationModel != null) {
       imageSegmentationModel!!.close()
       imageSegmentationModel = null
     }
     try {
-      imageSegmentationModel = ImageSegmentationModelExecutor(this, useGPU)
+      imageSegmentationModel = if (useGPUPass && useGPU) ImageSegmentationModelExecutorGPUPass(this) else ImageSegmentationModelExecutor(this, useGPU)
     } catch (e: Exception) {
       Log.e(TAG, "Fail to create ImageSegmentationModelExecutor: ${e.message}")
       val logText: TextView = findViewById(R.id.log_view)

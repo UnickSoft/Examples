@@ -44,27 +44,26 @@ import org.tensorflow.lite.gpu.GpuDelegate
  * 'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep',
  * 'sofa', 'train', 'tv'
  */
-class ImageSegmentationModelExecutor(context: Context, private var useGPU: Boolean = false) {
+open class ImageSegmentationModelExecutor(context: Context, private var useGPU: Boolean = false) {
   private var gpuDelegate: GpuDelegate? = null
 
-  private val segmentationMasks: ByteBuffer
+  protected val segmentationMasks: ByteBuffer
   private val interpreter: Interpreter
 
-  private var fullTimeExecutionTime = 0L
-  private var preprocessTime = 0L
-  private var imageSegmentationTime = 0L
-  private var maskFlatteningTime = 0L
+  protected var fullTimeExecutionTime = 0L
+  protected var preprocessTime = 0L
+  protected var imageSegmentationTime = 0L
+  protected var maskFlatteningTime = 0L
 
-  private var numberThreads = 4
+  protected var numberThreads = 4
 
   init {
-
     interpreter = getInterpreter(context, imageSegmentationModel, useGPU)
     segmentationMasks = ByteBuffer.allocateDirect(1 * imageSize * imageSize * NUM_CLASSES * 4)
     segmentationMasks.order(ByteOrder.nativeOrder())
   }
 
-  fun execute(data: Bitmap): ModelExecutionResult {
+  open fun execute(data: Bitmap): ModelExecutionResult {
     try {
       fullTimeExecutionTime = SystemClock.uptimeMillis()
 
@@ -120,7 +119,7 @@ class ImageSegmentationModelExecutor(context: Context, private var useGPU: Boole
   // base:
   // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/java/demo/app/src/main/java/com/example/android/tflitecamerademo/ImageClassifier.java
   @Throws(IOException::class)
-  private fun loadModelFile(context: Context, modelFile: String): MappedByteBuffer {
+  protected fun loadModelFile(context: Context, modelFile: String): MappedByteBuffer {
     val fileDescriptor = context.assets.openFd(modelFile)
     val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
     val fileChannel = inputStream.channel
@@ -161,14 +160,14 @@ class ImageSegmentationModelExecutor(context: Context, private var useGPU: Boole
     return sb.toString()
   }
 
-  fun close() {
+  open fun close() {
     interpreter.close()
     if (gpuDelegate != null) {
       gpuDelegate!!.close()
     }
   }
 
-  private fun convertBytebufferMaskToBitmap(
+  protected fun convertBytebufferMaskToBitmap(
     inputBuffer: ByteBuffer,
     imageWidth: Int,
     imageHeight: Int,
@@ -213,13 +212,12 @@ class ImageSegmentationModelExecutor(context: Context, private var useGPU: Boole
   }
 
   companion object {
-
-    public const val TAG = "SegmentationInterpreter"
-    private const val imageSegmentationModel = "deeplabv3_257_mv_gpu.tflite"
-    private const val imageSize = 257
+    private const val TAG = "SegmentationInterpreter"
+    const val imageSegmentationModel = "deeplabv3_257_mv_gpu.tflite"
+    const val imageSize = 257
     const val NUM_CLASSES = 21
-    private const val IMAGE_MEAN = 127.5f
-    private const val IMAGE_STD = 127.5f
+    const val IMAGE_MEAN = 127.5f
+    const val IMAGE_STD = 127.5f
 
     val segmentColors = IntArray(NUM_CLASSES)
     val labelsArrays =
@@ -262,6 +260,6 @@ class ImageSegmentationModelExecutor(context: Context, private var useGPU: Boole
       }
     }
 
-    private fun getRandomRGBInt(random: Random) = (255 * random.nextFloat()).toInt()
+    protected fun getRandomRGBInt(random: Random) = (255 * random.nextFloat()).toInt()
   }
 }
