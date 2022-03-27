@@ -1,8 +1,3 @@
-//
-// Created by o.shaikhatarov on 5/6/21.
-//
-
-
 #include <jni.h>
 #include "TensorflowRunnerJNI.h"
 #include "TensorflowRunner.h"

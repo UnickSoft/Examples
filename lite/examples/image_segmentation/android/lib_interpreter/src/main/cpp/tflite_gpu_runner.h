@@ -126,9 +126,6 @@ class TFLiteGPURunner {
 
   bool opencl_is_forced_ = false;
   bool opengl_is_forced_ = false;
-
-  TfLiteDelegate* delegate_  = nullptr;
-  TfLiteDelegate* delegate2_ = nullptr;
 };
 
 }  // namespace gpu

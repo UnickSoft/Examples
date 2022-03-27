@@ -101,8 +101,6 @@ bool TFLiteGPURunner::InitializeWithModel(
   options.experimental_flags = TFLITE_GPU_EXPERIMENTAL_FLAGS_ENABLE_QUANT;
   options.inference_priority1 = TFLITE_GPU_INFERENCE_PRIORITY_MIN_LATENCY;
   options.inference_preference = TFLITE_GPU_INFERENCE_PREFERENCE_SUSTAINED_SPEED;
-  TfLiteDelegate* delegate_  = TfLiteGpuDelegateV2Create(&options);
-  TfLiteDelegate* delegate2_ = TfLiteGpuDelegateV2Create(&options);
 
   MP_RETURN_IF_ERROR(
       BuildFromFlatBuffer(flatbuffer, op_resolver, graph_gl_.get()).ok());

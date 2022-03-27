@@ -1,7 +1,3 @@
-//
-// Created by o.shaikhatarov on 5/6/21.
-//
-
 #ifndef DEMO_TESTJNI_H
 #define DEMO_TESTJNI_H
 
