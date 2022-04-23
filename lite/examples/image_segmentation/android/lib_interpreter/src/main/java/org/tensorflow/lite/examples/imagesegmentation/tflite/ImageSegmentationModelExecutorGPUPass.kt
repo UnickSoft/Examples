@@ -89,10 +89,12 @@ class ImageSegmentationModelExecutorGPUPass(context: Context) : ImageSegmentatio
       prepareGPUDataExecutionTime = SystemClock.uptimeMillis()
       prepareGpuData(scaledBitmap)
       assert(bufferBinded)
+      GLES31.glFinish();
       prepareGPUDataExecutionTime = SystemClock.uptimeMillis() - prepareGPUDataExecutionTime
 
       imageSegmentationTime = SystemClock.uptimeMillis()
       nativeRunner.run()
+      GLES31.glFinish();
       GLES31.glMemoryBarrier(GLES31.GL_ALL_BARRIER_BITS);
       imageSegmentationTime = SystemClock.uptimeMillis() - imageSegmentationTime
       Log.d(TAG, "Time to run the model $imageSegmentationTime")
